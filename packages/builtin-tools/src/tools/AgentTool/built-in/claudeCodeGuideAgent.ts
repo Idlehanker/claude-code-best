@@ -17,6 +17,7 @@ import type {
 const CLAUDE_CODE_DOCS_MAP_URL =
   'https://code.claude.com/docs/en/claude_code_docs_map.md'
 const CDP_DOCS_MAP_URL = 'https://platform.claude.com/llms.txt'
+const ISSUES_URL = 'https://github.com/claude-code-best/claude-code/issues'
 
 export const CLAUDE_CODE_GUIDE_AGENT_TYPE = 'claude-code-guide'
 
@@ -90,7 +91,7 @@ function getFeedbackGuideline(): string {
   // For 3P services (Bedrock/Vertex/Foundry), /feedback command is disabled
   // Direct users to the appropriate feedback channel instead
   if (isUsing3PServices()) {
-    return `- When you cannot find an answer or the feature doesn't exist, direct the user to ${MACRO.ISSUES_EXPLAINER}`
+    return `- When you cannot find an answer or the feature doesn't exist, direct the user to ${ISSUES_URL}`
   }
   return "- When you cannot find an answer or the feature doesn't exist, direct the user to use /feedback to report a feature request or bug"
 }
