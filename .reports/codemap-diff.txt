@@ -1,0 +1,25 @@
+Codemap Generation Report — 2026-05-28
+=====================================
+
+Status: INITIAL GENERATION (no previous codemaps to diff against)
+
+Files Created (5):
+  docs/CODEMAPS/architecture.md  — High-level system architecture, entry chain, core loop, feature flags
+  docs/CODEMAPS/backend.md       — 7 API providers, query flow, service modules, ACP protocol
+  docs/CODEMAPS/frontend.md      — Ink/React terminal UI, 3 screens, component tree, design system
+  docs/CODEMAPS/data.md          — State management, 60+ tool system, context, types, plugins
+  docs/CODEMAPS/dependencies.md  — 11 workspace packages, 5 native addons, external services, build tools
+
+Project Stats:
+  - Total source files (src/): 2,310
+  - Workspace packages: 11
+  - Built-in tools: ~60
+  - API providers: 7 (firstParty, bedrock, vertex, openai, gemini, grok, foundry)
+  - UI framework: React/Ink (forked at packages/@ant/ink/)
+  - Runtime: Bun (builds to Node.js-compatible output)
+  - Feature flags: 65+
+
+Notes:
+  - No staleness warnings (initial generation)
+  - All codemaps under 1,000 tokens for efficient AI context loading
+  - Focused on high-level structure — implementation details available in source files
