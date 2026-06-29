@@ -40,8 +40,8 @@ const allFeatures = [...new Set([...DEFAULT_BUILD_FEATURES, ...envFeatures])]
 const featureArgs = allFeatures.flatMap(name => ['--feature', name])
 
 // If BUN_INSPECT is set, pass --inspect-wait to the child process
-const inspectArgs = process.env.BUN_INSPECT
-  ? ['--inspect-wait=' + process.env.BUN_INSPECT]
+const inspectArgs = process.env.BUN_INSPECT_URL
+  ? ['--inspect-wait=' + process.env.BUN_INSPECT_URL]
   : []
 
 const result = Bun.spawnSync(

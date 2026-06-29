@@ -54,7 +54,8 @@
 				"panel": "dedicated",
 				"reveal": "always"
 			},
-			"isBackground": true
+			"isBackground": true,
+			"problemMatcher": []
 		},
 		{
 			"label": "Tail Frame-Timing Log",
@@ -83,6 +84,29 @@
 				"reveal": "always"
 			},
 			"isBackground": true
+		},
+		{
+			"label": "Mock Event Server",
+			"type": "shell",
+			"command": "bun run scripts/mock-event-server.ts",
+			"isBackground": true,
+			"presentation": {
+				"reveal": "always",
+				"focus": false,
+				"panel": "dedicated",
+				"clear": true,
+				"group": "analytics"
+			},
+			"problemMatcher": {
+				"pattern": {
+					"regexp": "^$"
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "Mock event logging server running",
+					"endsPattern": "Mock event logging server running"
+				}
+			}
 		}
 	]
 }
