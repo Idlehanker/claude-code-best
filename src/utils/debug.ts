@@ -1,6 +1,6 @@
 import { appendFile, mkdir, symlink, unlink } from 'fs/promises'
 import memoize from 'lodash-es/memoize.js'
-import { dirname, join } from 'path'
+import { dirname, join, relative } from 'path'
 import { getSessionId } from 'src/bootstrap/state.js'
 
 import { type BufferedWriter, createBufferedWriter } from './bufferedWriter.js'
@@ -10,10 +10,13 @@ import {
   parseDebugFilter,
   shouldShowDebugMessage,
 } from './debugFilter.js'
+
 import { getClaudeConfigHomeDir, isEnvTruthy } from './envUtils.js'
 import { getFsImplementation } from './fsOperations.js'
 import { writeToStderr } from './process.js'
 import { jsonStringify } from './slowOperations.js'
+import { getShanghaiTimestamp } from './intl.js'
+import { fileURLToPath } from 'url'
 
 export type DebugLogLevel = 'verbose' | 'debug' | 'info' | 'warn' | 'error'
 
@@ -197,12 +200,52 @@ export async function flushDebugLogs(): Promise<void> {
   debugWriter?.flush()
   await pendingWrite
 }
+/**
+ * Extracts a compact caller location string from the V8/Bun stack trace.
+ *
+ * @param depth Stack frame index to read (0 = "Error", 1 = getCallerInfo itself,
+ *              2 = logForDebugging, 3 = direct caller, 4+ = callers of wrappers).
+ */
+/**
+ * Converts a raw stack-frame path (file:// URL or absolute FS path) to a
+ * forward-slash path relative to process.cwd() (the project root).
+ * Falls back to the basename if the conversion fails.
+ */
+function toRelativePath(raw: string): string {
+  try {
+    const fsPath = raw.startsWith('file://') ? fileURLToPath(raw) : raw
+    const rel = relative(process.cwd(), fsPath)
+    // Replace backslashes on Windows and guard against empty string
+    return rel ? rel.replaceAll('\\', '/') : (raw.split('/').at(-1) ?? raw)
+  } catch {
+    return raw.split('/').at(-1) ?? raw
+  }
+}
+
+function getCallerInfo(depth: number): string {
+  const lines = new Error().stack?.split('\n')
+  const frame = lines?.[depth] ?? ''
+  // Named function:  "    at fnName (file:///path/file.ts:42:10)"
+  const named = frame.match(/at (\S+) \((.+):(\d+):\d+\)/)
+  if (named) {
+    const [, fn, file, line] = named
+    return `[${toRelativePath(file ?? '')}:${line} ${fn}]`
+  }
+  // Anonymous / top-level:  "    at file:///path/file.ts:42:10"
+  const anon = frame.match(/at (.+):(\d+):\d+/)
+  if (anon) {
+    const [, file, line] = anon
+    return `[${toRelativePath(file ?? '')}:${line}]`
+  }
+  return ''
+}
 
 export function logForDebugging(
   message: string,
-  { level }: { level: DebugLogLevel } = {
-    level: 'debug',
-  },
+  {
+    level = 'debug',
+    callerDepth = 3,
+  }: { level?: DebugLogLevel; callerDepth?: number } = {},
 ): void {
   if (LEVEL_ORDER[level] < LEVEL_ORDER[getMinDebugLogLevel()]) {
     return
@@ -211,12 +254,15 @@ export function logForDebugging(
     return
   }
 
+  const caller = getCallerInfo(callerDepth)
+
   // Multiline messages break the jsonl output format, so make any multiline messages JSON.
   if (hasFormattedOutput && message.includes('\n')) {
     message = jsonStringify(message)
   }
-  const timestamp = new Date().toISOString()
-  const output = `${timestamp} [${level.toUpperCase()}] ${message.trim()}\n`
+  const timestamp = getShanghaiTimestamp()
+  const callerStr = caller ? ` ${caller}` : ''
+  const output = `${timestamp} [${level.toUpperCase()}]${callerStr} ${message.trim()}\n`
   if (isDebugToStdErr()) {
     writeToStderr(output)
     return

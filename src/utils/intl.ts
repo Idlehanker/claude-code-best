@@ -92,3 +92,13 @@ export function getSystemLocaleLanguage(): string | undefined {
   }
   return cachedSystemLocaleLanguage
 }
+
+/**
+ * Get an ISO 8601 timestamp string in Asia/Shanghai timezone (UTC+8).
+ * Format: YYYY-MM-DDTHH:mm:ss.sss+08:00
+ */
+export function getShanghaiTimestamp(date: Date = new Date()): string {
+  const shanghaiOffset = 8 * 60 * 60 * 1000
+  const shanghaiTime = new Date(date.getTime() + shanghaiOffset)
+  return shanghaiTime.toISOString().slice(0, -1) + '+08:00'
+}

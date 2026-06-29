@@ -1,6 +1,7 @@
 import { dirname } from 'path'
 import { getFsImplementation } from './fsOperations.js'
 import { jsonStringify } from './slowOperations.js'
+import { getShanghaiTimestamp } from './intl.js'
 
 type DiagnosticLogLevel = 'debug' | 'info' | 'warn' | 'error'
 
@@ -35,7 +36,7 @@ export function logForDiagnosticsNoPII(
   }
 
   const entry: DiagnosticLogEntry = {
-    timestamp: new Date().toISOString(),
+    timestamp: getShanghaiTimestamp(),
     level,
     event,
     data: data ?? {},

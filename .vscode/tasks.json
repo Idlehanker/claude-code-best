@@ -1,5 +1,10 @@
 {
 	"version": "2.0.0",
+	"options": {
+		"env": {
+			"TZ": "Asia/Shanghai"
+		}
+	},
 	"tasks": [
 		{
 			"label": "Start Claude Code TUI",
@@ -22,6 +27,62 @@
 					"endsPattern": ".*Listening:.*"
 				}
 			}
+		},
+		{
+			"label": "Tail Debug Log",
+			"type": "process",
+			"command": "bash",
+			"args": [
+				"-c",
+				"log=\"$HOME\\.claude\\debug\\latest\"; log=\"${log//\\\\//}\"; echo \"Waiting for $log ...\"; while [ ! -f \"$log\" ]; do sleep 0.5; done; echo \"Found! Tailing...\"; tail -F \"$log\""
+			],
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "always"
+			},
+			"isBackground": true
+		},
+		{
+			"label": "Tail Diagnose Log",
+			"type": "process",
+			"command": "bash",
+			"args": [
+				"-c",
+				"log=\"$HOME\\.claude\\debug\\claude-diagnose.log\"; log=\"${log//\\\\//}\"; echo \"Waiting for $log ...\"; while [ ! -f \"$log\" ]; do sleep 0.5; done; echo \"Found! Tailing...\"; tail -F \"$log\""
+			],
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "always"
+			},
+			"isBackground": true
+		},
+		{
+			"label": "Tail Frame-Timing Log",
+			"type": "process",
+			"command": "bash",
+			"args": [
+				"-c",
+				"log=\"$HOME\\.claude\\debug\\claude-frame-timing.log\"; log=\"${log//\\\\//}\"; echo \"Waiting for $log ...\"; while [ ! -f \"$log\" ]; do sleep 0.5; done; echo \"Found! Tailing...\"; tail -F \"$log\""
+			],
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "always"
+			},
+			"isBackground": true
+		},
+		{
+			"label": "Tail MCP Logs",
+			"type": "process",
+			"command": "bash.exe",
+			"args": [
+				"-c",
+				"cache=\"${env:LOCALAPPDATA}\\claude-cli-nodejs\\Cache\"; cache=\"${cache//\\\\//}\"; echo \"Searching for MCP logs in $cache ...\"; while true; do files=$(find \"$cache\" -type f -path '*/mcp-logs-*/*.jsonl' 2>/dev/null); [ -n \"$files\" ] && break; sleep 0.5; done; echo \"Found MCP log(s):\"; echo \"$files\"; echo '---'; tail -F $files"
+			],
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "always"
+			},
+			"isBackground": true
 		}
 	]
 }

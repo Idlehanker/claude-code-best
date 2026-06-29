@@ -5,7 +5,7 @@
 			"type": "bun",
 			"request": "attach",
 			"name": "Attach to Claude Code",
-			"url": "ws://localhost:8888/2dc3gzl5xot",
+			"url": "ws://127.0.0.1:5229/2dc3gzl5xot",
 			"stopOnEntry": false,
 			"internalConsoleOptions": "neverOpen"
 		}
