@@ -34,13 +34,16 @@
 			"command": "bash",
 			"args": [
 				"-c",
-				"log=\"$HOME\\.claude\\debug\\latest\"; log=\"${log//\\\\//}\"; echo \"Waiting for $log ...\"; while [ ! -f \"$log\" ]; do sleep 0.5; done; echo \"Found! Tailing...\"; tail -F \"$log\""
+				"log=\"$HOME\\.claude\\debug\\latest\"; log=\"${log//\\\\//}\"; echo \"Waiting for $log ...\"; while [ ! -f \"$log\" ]; do sleep 0.5; done; echo \"Found! Tailing...\"; echo \"cwd: $(pwd); shell: $0 \" ; tail -F \"$log\""
 			],
 			"presentation": {
 				"panel": "dedicated",
 				"reveal": "always"
 			},
-			"isBackground": true
+			"isBackground": true,
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
 		},
 		{
 			"label": "Tail Diagnose Log",

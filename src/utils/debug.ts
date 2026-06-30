@@ -228,13 +228,17 @@ function getCallerInfo(depth: number): string {
   const named = frame.match(/at (\S+) \((.+):(\d+):\d+\)/)
   if (named) {
     const [, fn, file, line] = named
-    return `[${toRelativePath(file ?? '')}:${line} ${fn}]`
+    //return `[${toRelativePath(file ?? '')}:${line} ${fn}]`
+    //return `[${file ?? ''}:${line} ${fn}]`
+    return `(${file ?? ''}:${line} ${fn})`
   }
   // Anonymous / top-level:  "    at file:///path/file.ts:42:10"
   const anon = frame.match(/at (.+):(\d+):\d+/)
   if (anon) {
     const [, file, line] = anon
-    return `[${toRelativePath(file ?? '')}:${line}]`
+    //return `[${toRelativePath(file ?? '')}:${line}]`
+    // return `[${file ?? ''}:${line}]`
+    return `(${file ?? ''}:${line})`
   }
   return ''
 }
@@ -261,7 +265,8 @@ export function logForDebugging(
   }
   const timestamp = getShanghaiTimestamp()
   const callerStr = caller ? ` ${caller}` : ''
-  const output = `${timestamp} [${level.toUpperCase()}]${callerStr} ${message.trim()}\n`
+  //const output = `${timestamp} [${level.toUpperCase()}]${callerStr} ${message.trim()}\n`
+  const output = `${timestamp} [${level.toUpperCase()}] ${message.trim()}|${callerStr} \n`
   if (isDebugToStdErr()) {
     writeToStderr(output)
     return
