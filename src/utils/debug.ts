@@ -2,7 +2,6 @@ import { appendFile, mkdir, symlink, unlink } from 'fs/promises'
 import memoize from 'lodash-es/memoize.js'
 import { dirname, join, relative } from 'path'
 import { getSessionId } from 'src/bootstrap/state.js'
-
 import { type BufferedWriter, createBufferedWriter } from './bufferedWriter.js'
 import { registerCleanup } from './cleanupRegistry.js'
 import {
@@ -305,8 +304,10 @@ export function logAntError(context: string, error: unknown): void {
   }
 
   if (error instanceof Error && error.stack) {
+    // callerDepth 4: skip getCallerInfo → logForDebugging → logAntError → reach real caller
     logForDebugging(`[ANT-ONLY] ${context} stack trace:\n${error.stack}`, {
       level: 'error',
+      callerDepth: 4,
     })
   }
 }

@@ -1,4 +1,5 @@
 import { dirname } from 'path'
+import { getCallerLocation } from './callerInfo.js'
 import { getFsImplementation } from './fsOperations.js'
 import { jsonStringify } from './slowOperations.js'
 import { getShanghaiTimestamp } from './intl.js'
@@ -9,6 +10,7 @@ type DiagnosticLogEntry = {
   timestamp: string
   level: DiagnosticLogLevel
   event: string
+  src: string
   data: Record<string, unknown>
 }
 
@@ -29,6 +31,7 @@ export function logForDiagnosticsNoPII(
   level: DiagnosticLogLevel,
   event: string,
   data?: Record<string, unknown>,
+  callerDepth = 3,
 ): void {
   const logFile = getDiagnosticLogFile()
   if (!logFile) {
@@ -39,6 +42,7 @@ export function logForDiagnosticsNoPII(
     timestamp: getShanghaiTimestamp(),
     level,
     event,
+    src: getCallerLocation(callerDepth),
     data: data ?? {},
   }
 
@@ -76,20 +80,30 @@ export async function withDiagnosticsTiming<T>(
   getData?: (result: T) => Record<string, unknown>,
 ): Promise<T> {
   const startTime = Date.now()
-  logForDiagnosticsNoPII('info', `${event}_started`)
+  logForDiagnosticsNoPII('info', `${event}_started`, undefined, 4)
 
   try {
     const result = await fn()
     const additionalData = getData ? getData(result) : {}
-    logForDiagnosticsNoPII('info', `${event}_completed`, {
-      duration_ms: Date.now() - startTime,
-      ...additionalData,
-    })
+    logForDiagnosticsNoPII(
+      'info',
+      `${event}_completed`,
+      {
+        duration_ms: Date.now() - startTime,
+        ...additionalData,
+      },
+      4,
+    )
     return result
   } catch (error) {
-    logForDiagnosticsNoPII('error', `${event}_failed`, {
-      duration_ms: Date.now() - startTime,
-    })
+    logForDiagnosticsNoPII(
+      'error',
+      `${event}_failed`,
+      {
+        duration_ms: Date.now() - startTime,
+      },
+      4,
+    )
     throw error
   }
 }

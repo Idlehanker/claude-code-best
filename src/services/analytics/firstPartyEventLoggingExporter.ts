@@ -110,9 +110,11 @@ export class FirstPartyEventLoggingExporter implements LogRecordExporter {
     } = {},
   ) {
     // Default: prod, except when ANTHROPIC_BASE_URL is explicitly staging.
-    // Overridable via tengu_1p_event_batch_config.baseUrl.
+    // Overridable via tengu_1p_event_batch_config.baseUrl (GrowthBook dynamic config)
+    // or CLAUDE_1P_EVENT_BASE_URL env var (for local development / mock servers).
     const baseUrl =
       options.baseUrl ||
+      process.env.CLAUDE_1P_EVENT_BASE_URL ||
       (process.env.ANTHROPIC_BASE_URL === 'https://api-staging.anthropic.com'
         ? 'https://api-staging.anthropic.com'
         : 'https://api.anthropic.com')
