@@ -101,5 +101,5 @@ export function getShanghaiTimestamp(date: Date = new Date()): string {
   const shanghaiOffset = 8 * 60 * 60 * 1000
   const shanghaiTime = new Date(date.getTime() + shanghaiOffset)
   //return shanghaiTime.toISOString().slice(5, -1)
-  return shanghaiTime.toISOString().slice(10, -1)
+  return shanghaiTime.toISOString().slice(10, -5)
 }
