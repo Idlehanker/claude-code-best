@@ -73,10 +73,7 @@ export function usePromptsFromClaudeInChrome(
                 },
               },
             ];
-            enqueuePendingNotification({
-              value: contentBlocks,
-              mode: 'prompt',
-            });
+            enqueuePendingNotification({ value: contentBlocks, mode: 'prompt' });
           } else {
             enqueuePendingNotification({ value: prompt, mode: 'prompt' });
           }

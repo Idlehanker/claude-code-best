@@ -1,5 +1,6 @@
 import { createSignal } from './signal.js'
 
+//消息源，囊括 5 个类型
 export type MessageSource = 'user' | 'teammate' | 'system' | 'tick' | 'task'
 
 export type Message = {

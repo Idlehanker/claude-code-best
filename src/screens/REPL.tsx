@@ -202,7 +202,8 @@ const getCoordinatorUserContext: (
   mcpClients: ReadonlyArray<{ name: string }>,
   scratchpadDir?: string,
 ) => { [k: string]: string } = feature('COORDINATOR_MODE')
-  ? require('../coordinator/coordinatorMode.js').getCoordinatorUserContext
+  ? (require('../coordinator/coordinatorMode.js')
+      .getCoordinatorUserContext as typeof import('../coordinator/coordinatorMode.js').getCoordinatorUserContext)
   : () => ({});
 /* eslint-enable custom-rules/no-process-env-top-level, @typescript-eslint/no-require-imports */
 import useCanUseTool from '../hooks/useCanUseTool.js';
@@ -357,7 +358,10 @@ const PROACTIVE_FALSE = () => false;
 const PROACTIVE_NULL = (): number | null => null;
 const SUGGEST_BG_PR_NOOP = (_p: string, _n: string): boolean => false;
 const useProactive =
-  feature('PROACTIVE') || feature('KAIROS') ? require('../proactive/useProactive.js').useProactive : null;
+  feature('PROACTIVE') || feature('KAIROS')
+    ? (require('../proactive/useProactive.js')
+        .useProactive as typeof import('../proactive/useProactive.js').useProactive)
+    : null;
 const useScheduledTasks = feature('AGENT_TRIGGERS') ? require('../hooks/useScheduledTasks.js').useScheduledTasks : null;
 const useMasterMonitor = feature('UDS_INBOX')
   ? require('../hooks/useMasterMonitor.js').useMasterMonitor
@@ -374,7 +378,7 @@ const usePipePermissionForward = feature('UDS_INBOX')
   : () => undefined;
 const usePipeMuteSync = feature('UDS_INBOX') ? require('../hooks/usePipeMuteSync.js').usePipeMuteSync : () => undefined;
 const usePipeRouter = feature('UDS_INBOX')
-  ? require('../hooks/usePipeRouter.js').usePipeRouter
+  ? (require('../hooks/usePipeRouter.js').usePipeRouter as typeof import('../hooks/usePipeRouter.js').usePipeRouter)
   : () => ({ routeToSelectedPipes: () => false });
 /* eslint-enable @typescript-eslint/no-require-imports */
 import { isAgentSwarmsEnabled } from '../utils/agentSwarmsEnabled.js';
@@ -1131,6 +1135,7 @@ export function REPL({
       const elapsed = Date.now() - streamingThinking.streamingEndedAt;
       const remaining = 30000 - elapsed;
       if (remaining > 0) {
+        // defer setting value to null.
         const timer = setTimeout(setStreamingThinking, remaining, null);
         return () => clearTimeout(timer);
       } else {
@@ -4985,7 +4990,8 @@ export function REPL({
 
   // Pipe IPC lifecycle — extracted to usePipeIpc hook
   usePipeIpc({ store, handleIncomingPrompt });
-  const { routeToSelectedPipes } = usePipeRouter({ store, setAppState, addNotification });
+  // const { routeToSelectedPipes } = usePipeRouter({ store, setAppState, addNotification });
+  const { routeToSelectedPipes } = usePipeRouter({ store, setAppState });
 
   // Scheduled tasks from .claude/scheduled_tasks.json (CronCreate/Delete/List)
   if (feature('AGENT_TRIGGERS')) {
