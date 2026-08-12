@@ -201,7 +201,8 @@ const getCoordinatorUserContext: (
   mcpClients: ReadonlyArray<{ name: string }>,
   scratchpadDir?: string,
 ) => { [k: string]: string } = feature('COORDINATOR_MODE')
-  ? require('../coordinator/coordinatorMode.js').getCoordinatorUserContext
+  ? (require('../coordinator/coordinatorMode.js')
+      .getCoordinatorUserContext as typeof import('../coordinator/coordinatorMode.js').getCoordinatorUserContext)
   : () => ({});
 /* eslint-enable custom-rules/no-process-env-top-level, @typescript-eslint/no-require-imports */
 import useCanUseTool from '../hooks/useCanUseTool.js';
@@ -347,13 +348,19 @@ import { BackgroundAgentSelector } from '../components/tasks/BackgroundAgentSele
 import { useInboxPoller } from '../hooks/useInboxPoller.js';
 // Dead code elimination: conditional import for loop mode
 /* eslint-disable @typescript-eslint/no-require-imports */
-const proactiveModule = feature('PROACTIVE') || feature('KAIROS') ? require('../proactive/index.js') : null;
+const proactiveModule =
+  feature('PROACTIVE') || feature('KAIROS')
+    ? (require('../proactive/index.js') as typeof import('../proactive/index.js'))
+    : null;
 const PROACTIVE_NO_OP_SUBSCRIBE = (_cb: () => void) => () => {};
 const PROACTIVE_FALSE = () => false;
 const PROACTIVE_NULL = (): number | null => null;
 const SUGGEST_BG_PR_NOOP = (_p: string, _n: string): boolean => false;
 const useProactive =
-  feature('PROACTIVE') || feature('KAIROS') ? require('../proactive/useProactive.js').useProactive : null;
+  feature('PROACTIVE') || feature('KAIROS')
+    ? (require('../proactive/useProactive.js')
+        .useProactive as typeof import('../proactive/useProactive.js').useProactive)
+    : null;
 const useScheduledTasks = feature('AGENT_TRIGGERS') ? require('../hooks/useScheduledTasks.js').useScheduledTasks : null;
 const useMasterMonitor = feature('UDS_INBOX')
   ? require('../hooks/useMasterMonitor.js').useMasterMonitor
@@ -363,14 +370,14 @@ const useSlaveNotifications = feature('UDS_INBOX')
   : () => undefined;
 const usePipeIpc = feature('UDS_INBOX') ? require('../hooks/usePipeIpc.js').usePipeIpc : () => undefined;
 const usePipeRelay = feature('UDS_INBOX')
-  ? require('../hooks/usePipeRelay.js').usePipeRelay
+  ? (require('../hooks/usePipeRelay.js').usePipeRelay as typeof import('../hooks/usePipeRelay.js').usePipeRelay)
   : () => ({ relayPipeMessage: () => false, pipeReturnHadErrorRef: { current: false } });
 const usePipePermissionForward = feature('UDS_INBOX')
   ? require('../hooks/usePipePermissionForward.js').usePipePermissionForward
   : () => undefined;
 const usePipeMuteSync = feature('UDS_INBOX') ? require('../hooks/usePipeMuteSync.js').usePipeMuteSync : () => undefined;
 const usePipeRouter = feature('UDS_INBOX')
-  ? require('../hooks/usePipeRouter.js').usePipeRouter
+  ? (require('../hooks/usePipeRouter.js').usePipeRouter as typeof import('../hooks/usePipeRouter.js').usePipeRouter)
   : () => ({ routeToSelectedPipes: () => false });
 /* eslint-enable @typescript-eslint/no-require-imports */
 import { isAgentSwarmsEnabled } from '../utils/agentSwarmsEnabled.js';
@@ -1119,6 +1126,7 @@ export function REPL({
       const elapsed = Date.now() - streamingThinking.streamingEndedAt;
       const remaining = 30000 - elapsed;
       if (remaining > 0) {
+        // defer setting value to null.
         const timer = setTimeout(setStreamingThinking, remaining, null);
         return () => clearTimeout(timer);
       } else {
@@ -4973,7 +4981,8 @@ export function REPL({
 
   // Pipe IPC lifecycle — extracted to usePipeIpc hook
   usePipeIpc({ store, handleIncomingPrompt });
-  const { routeToSelectedPipes } = usePipeRouter({ store, setAppState, addNotification });
+  // const { routeToSelectedPipes } = usePipeRouter({ store, setAppState, addNotification });
+  const { routeToSelectedPipes } = usePipeRouter({ store, setAppState });
 
   // Scheduled tasks from .claude/scheduled_tasks.json (CronCreate/Delete/List)
   if (feature('AGENT_TRIGGERS')) {

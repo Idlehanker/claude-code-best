@@ -94,6 +94,8 @@ export function resetAutoModeGateCheck(): void {
   autoModeCheckRan = false
 }
 
+// Kick Off-起脚开球
+//
 export function useKickOffCheckAndDisableAutoModeIfNeeded(): void {
   const mainLoopModel = useAppState(s => s.mainLoopModel)
   const mainLoopModelForSession = useAppState(s => s.mainLoopModelForSession)

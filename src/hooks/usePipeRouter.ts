@@ -10,27 +10,32 @@ import { useCallback } from 'react'
 
 type StoreApi = { getState: () => any }
 type SetAppState = (updater: (prev: any) => any) => void
-type AddNotification = (opts: {
-  key: string
-  text: string
-  color: string
-  priority: string
-  timeoutMs: number
-}) => void
+// type AddNotification = (opts: {
+//   key: string
+//   text: string
+//   color: string
+//   priority: string
+//   timeoutMs: number
+// }) => void
+
+import { useNotifications } from 'src/context/notifications.js'
 
 type Deps = {
   store: StoreApi
   setAppState: SetAppState
-  addNotification: AddNotification
+  //addNotification: AddNotification
 }
 
 /**
  * Attempt to route user input to selected pipes.
  * Returns true if routed to at least one pipe (skip local execution).
  */
-export function usePipeRouter({ store, setAppState, addNotification }: Deps): {
+//export function usePipeRouter({ store, setAppState, addNotification }: Deps): {
+export function usePipeRouter({ store, setAppState }: Deps): {
   routeToSelectedPipes: (input: string) => boolean
 } {
+  const { addNotification } = useNotifications()
+
   const routeToSelectedPipes = useCallback(
     (input: string): boolean => {
       if (!feature('UDS_INBOX')) return false

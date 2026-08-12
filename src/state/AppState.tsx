@@ -15,7 +15,7 @@ import { createStore } from './store.js';
 // still wraps children in VoiceContext so useVoiceState never throws.
 /* eslint-disable @typescript-eslint/no-require-imports */
 const VoiceProvider: (props: { children: React.ReactNode }) => React.ReactNode = feature('VOICE_MODE')
-  ? require('../context/voice.js').VoiceProvider
+  ? (require('../context/voice.js').VoiceProvider as typeof import('../context/voice.js').VoiceProvider)
   : (() => {
       const { VoiceContext } = require('../context/voice.js');
       const noopStore = createStore({
