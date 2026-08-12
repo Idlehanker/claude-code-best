@@ -22,6 +22,8 @@ export function useMainLoopModel(): ModelName {
   // Without this, the alias resolution is frozen until something else
   // happens to re-render the component — the API would sample one model
   // while /model (which also re-resolves) displays another.
+
+  // GB is short for GrowthBook in here!
   const [, forceRerender] = useReducer(x => x + 1, 0)
   useEffect(() => onGrowthBookRefresh(forceRerender), [])
 

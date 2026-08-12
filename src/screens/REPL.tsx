@@ -192,9 +192,10 @@ const useFrustrationDetection: typeof import('../components/FeedbackSurvey/useFr
     : () => ({ state: 'closed', handleTranscriptSelect: () => {} });
 // Ant-only org warning. Conditional require so the org UUID list is
 // eliminated from external builds (one UUID is on excluded-strings).
-const useAntOrgWarningNotification: typeof import('../hooks/notifs/useAntOrgWarningNotification.js').useAntOrgWarningNotification =
+const useAntOrgWarningNotification =
   process.env.USER_TYPE === 'ant'
-    ? require('../hooks/notifs/useAntOrgWarningNotification.js').useAntOrgWarningNotification
+    ? (require('../hooks/notifs/useAntOrgWarningNotification.js')
+        .useAntOrgWarningNotification as typeof import('../hooks/notifs/useAntOrgWarningNotification.js').useAntOrgWarningNotification)
     : () => {};
 // Dead code elimination: conditional import for coordinator mode
 const getCoordinatorUserContext: (
@@ -347,7 +348,10 @@ import { BackgroundAgentSelector } from '../components/tasks/BackgroundAgentSele
 import { useInboxPoller } from '../hooks/useInboxPoller.js';
 // Dead code elimination: conditional import for loop mode
 /* eslint-disable @typescript-eslint/no-require-imports */
-const proactiveModule = feature('PROACTIVE') || feature('KAIROS') ? require('../proactive/index.js') : null;
+const proactiveModule =
+  feature('PROACTIVE') || feature('KAIROS')
+    ? (require('../proactive/index.js') as typeof import('../proactive/index.js'))
+    : null;
 const PROACTIVE_NO_OP_SUBSCRIBE = (_cb: () => void) => () => {};
 const PROACTIVE_FALSE = () => false;
 const PROACTIVE_NULL = (): number | null => null;
@@ -363,7 +367,7 @@ const useSlaveNotifications = feature('UDS_INBOX')
   : () => undefined;
 const usePipeIpc = feature('UDS_INBOX') ? require('../hooks/usePipeIpc.js').usePipeIpc : () => undefined;
 const usePipeRelay = feature('UDS_INBOX')
-  ? require('../hooks/usePipeRelay.js').usePipeRelay
+  ? (require('../hooks/usePipeRelay.js').usePipeRelay as typeof import('../hooks/usePipeRelay.js').usePipeRelay)
   : () => ({ relayPipeMessage: () => false, pipeReturnHadErrorRef: { current: false } });
 const usePipePermissionForward = feature('UDS_INBOX')
   ? require('../hooks/usePipePermissionForward.js').usePipePermissionForward
@@ -407,13 +411,20 @@ import type { EffortValue } from '../utils/effort.js';
 import { RemoteCallout } from '../components/RemoteCallout.js';
 /* eslint-disable custom-rules/no-process-env-top-level, @typescript-eslint/no-require-imports */
 const AntModelSwitchCallout =
-  process.env.USER_TYPE === 'ant' ? require('../components/AntModelSwitchCallout.js').AntModelSwitchCallout : null;
+  process.env.USER_TYPE === 'ant'
+    ? (require('../components/AntModelSwitchCallout.js')
+        .AntModelSwitchCallout as typeof import('../components/AntModelSwitchCallout.js').AntModelSwitchCallout)
+    : null;
 const shouldShowAntModelSwitch =
   process.env.USER_TYPE === 'ant'
-    ? require('../components/AntModelSwitchCallout.js').shouldShowModelSwitchCallout
+    ? (require('../components/AntModelSwitchCallout.js')
+        .shouldShowModelSwitchCallout as typeof import('../components/AntModelSwitchCallout.js').shouldShowModelSwitchCallout)
     : (): boolean => false;
 const UndercoverAutoCallout =
-  process.env.USER_TYPE === 'ant' ? require('../components/UndercoverAutoCallout.js').UndercoverAutoCallout : null;
+  process.env.USER_TYPE === 'ant'
+    ? (require('../components/UndercoverAutoCallout.js')
+        .UndercoverAutoCallout as typeof import('../components/UndercoverAutoCallout.js').UndercoverAutoCallout)
+    : null;
 /* eslint-enable custom-rules/no-process-env-top-level, @typescript-eslint/no-require-imports */
 import { activityManager } from '../utils/activityManager.js';
 import { createAbortController } from '../utils/abortController.js';
@@ -502,6 +513,7 @@ import {
 import { setClipboard } from '@anthropic/ink';
 import type { ScrollBoxHandle } from '@anthropic/ink';
 import { createAttachmentMessage, getQueuedCommandAttachments } from '../utils/attachments.js';
+import { index } from 'cacache';
 
 // Stable empty array for hooks that accept MCPServerConnection[] — avoids
 // creating a new [] literal on every render in remote mode, which would

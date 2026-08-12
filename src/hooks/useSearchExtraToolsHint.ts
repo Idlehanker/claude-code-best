@@ -23,7 +23,7 @@ const MAX_HINT_SCORE = 0.15
 const MAX_HINT_TOOLS = 3
 
 export function useSearchExtraToolsHint(): SearchExtraToolsHintResult {
-  const prefetchResult = React.useSyncExternalStore(
+  const prefetchResult = React.useSyncExternalStore<ToolDiscoveryResult[]>(
     subscribeToSearchExtraToolsPrefetch,
     getSearchExtraToolsPrefetchSnapshot,
   )
